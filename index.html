@@ -2699,19 +2699,19 @@ body {
         <div class="reason-label">Select Session Type</div>
         <div class="reason-grid">
           <button class="reason-btn primary-reason selected" onclick="selectReason(this,'Coaching Waitlist — Join Session')">
-            <span class="reason-icon">🎮</span> Join Session<br>
+            <span class="reason-icon"></span> Join Session<br>
             <span style="font-size:0.6rem;opacity:0.7;font-weight:400">Coaching Waitlist</span>
           </button>
           <button class="reason-btn" onclick="selectReason(this,'Collaboration Inquiry')">
-            <span class="reason-icon">🤝</span> Collab Invite<br>
+            <span class="reason-icon"></span> Collab Invite<br>
             <span style="font-size:0.6rem;opacity:0.7;font-weight:400">Work Together</span>
           </button>
           <button class="reason-btn" onclick="selectReason(this,'General Inquiry')">
-            <span class="reason-icon">💬</span> Quick Message<br>
+            <span class="reason-icon"></span> Quick Message<br>
             <span style="font-size:0.6rem;opacity:0.7;font-weight:400">General Inquiry</span>
           </button>
           <button class="reason-btn" onclick="selectReason(this,'Just Saying Hey')">
-            <span class="reason-icon">👋</span> Say Hello<br>
+            <span class="reason-icon"></span> Say Hello<br>
             <span style="font-size:0.6rem;opacity:0.7;font-weight:400">Just Saying Hey</span>
           </button>
         </div>
@@ -2857,6 +2857,12 @@ function contactMe(e) {
   e.preventDefault();
   document.querySelectorAll('.halo-menu-item').forEach(el => el.classList.remove('selected'));
   e.currentTarget.classList.add('selected');
+   setTimeout(() => {
+    closeHaloScreen();
+    openContactScreen();
+    // Pre-select "Join Session" reason
+    document.querySelector('.reason-btn.primary-reason').click();
+  }, 300);
 }
 
 // Hover selected state on halo menu
