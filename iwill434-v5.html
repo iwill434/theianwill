@@ -1,0 +1,2984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iWill434 — Ian Williams</title>
+<link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600;700&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   iWill434 — Xbox 360 Blade Dashboard
+   Faithful to the 2005-2008 blade UI language
+   ============================================================ */
+
+:root {
+  --xbox-grey: #8a8a8a;
+  --xbox-silver: #c8c8c8;
+  --xbox-light: #e8e8e8;
+  --blade-bg: rgba(20,20,28,0.92);
+  --chrome-edge: linear-gradient(to right, #d0d0d0, #f0f0f0, #c0c0c0);
+
+  /* Blade accent colors */
+  --green-blade:  #2d5a1e;
+  --green-mid:    #3a7a28;
+  --green-light:  #52b043;
+  --green-glow:   rgba(82,176,67,0.4);
+
+  --orange-blade: #6b2e00;
+  --orange-mid:   #a04800;
+  --orange-light: #e07820;
+  --orange-glow:  rgba(224,120,32,0.4);
+
+  --blue-blade:   #0a1a3a;
+  --blue-mid:     #1a3a6a;
+  --blue-light:   #4a80c0;
+  --blue-glow:    rgba(74,128,192,0.4);
+
+  --purple-blade: #2a1040;
+  --purple-mid:   #4a2070;
+  --purple-light: #8a50c0;
+
+  --red-blade:    #3a0808;
+  --red-mid:      #6a1010;
+  --red-light:    #cc2020;
+
+  --home-blade:   #1a2030;
+  --home-mid:     #2a3050;
+
+  --text-white:  #ffffff;
+  --text-bright: #f0f4ff;
+  --text-dim:    rgba(255,255,255,0.55);
+  --text-muted:  rgba(255,255,255,0.3);
+  --sel-orange:  #e87820;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:100%; height:100%; overflow:hidden; }
+
+body {
+  font-family: 'Segoe UI', 'Rajdhani', sans-serif;
+  background: #1a1a22;
+  color: var(--text-white);
+  cursor: default;
+  user-select: none;
+}
+
+/* ============================================================
+   BOOT SCREEN
+   ============================================================ */
+#boot {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.boot-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 40% at 50% 65%, rgba(220,100,20,0.0) 0%, transparent 70%);
+  animation: bootGlow 1s 0.8s ease forwards;
+}
+
+@keyframes bootGlow {
+  0%   { background: radial-gradient(ellipse 60% 40% at 50% 65%, rgba(220,100,20,0.0) 0%, transparent 70%); }
+  50%  { background: radial-gradient(ellipse 60% 50% at 50% 68%, rgba(220,100,20,0.45) 0%, rgba(180,60,0,0.2) 40%, transparent 70%); }
+  100% { background: radial-gradient(ellipse 60% 50% at 50% 68%, rgba(220,100,20,0.35) 0%, rgba(180,60,0,0.15) 40%, transparent 70%); }
+}
+
+.boot-logo {
+  position: relative;
+  z-index: 2;
+  opacity: 0;
+  transform: scale(0.85);
+  animation: bootLogoIn 1s 0.3s cubic-bezier(0.2,0,0.3,1) forwards;
+}
+
+@keyframes bootLogoIn {
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* SVG Mountain Logo */
+.mountain-svg { width: 220px; height: 160px; filter: drop-shadow(0 0 24px rgba(220,100,20,0.6)); }
+
+.boot-tagline {
+  position: relative;
+  z-index: 2;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.45em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.0);
+  margin-top: 1.2rem;
+  animation: taglineIn 0.8s 1.6s ease forwards;
+}
+
+@keyframes taglineIn {
+  0%   { color: rgba(255,255,255,0.0); letter-spacing:0.6em; }
+  100% { color: rgba(255,255,255,0.75); letter-spacing:0.45em; }
+}
+
+.boot-name {
+  position: relative;
+  z-index: 2;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: rgba(255,255,255,0.0);
+  margin-top: 0.4rem;
+  animation: taglineIn 0.6s 1.2s ease forwards;
+}
+
+#boot.fade-out {
+  animation: bootFadeOut 0.7s ease forwards;
+}
+
+@keyframes bootFadeOut {
+  to { opacity: 0; pointer-events: none; }
+}
+
+/* ============================================================
+   GLOBAL CHROME BACKGROUND
+   The silver/grey surround of the Xbox 360 UI
+   ============================================================ */
+.chrome-bg {
+  position: fixed;
+  inset: 0;
+  background:
+    linear-gradient(to bottom,
+      #b0b8c8 0%,
+      #9098a8 8%,
+      #707888 12%,
+      #505868 100%
+    );
+  z-index: 0;
+}
+
+/* Top chrome gloss */
+.chrome-bg::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 45%;
+  background: linear-gradient(to bottom,
+    rgba(255,255,255,0.18) 0%,
+    rgba(255,255,255,0.04) 100%
+  );
+}
+
+/* ============================================================
+   TOP BAR — Xbox 360 faithful chrome header
+   ============================================================ */
+.top-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 46px;
+  z-index: 500;
+  background: linear-gradient(to bottom,
+    rgba(10,10,18,0.97) 0%,
+    rgba(10,10,18,0.9) 100%
+  );
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+}
+
+.gamertag-area {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.online-orb {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #8fff70, var(--green-light) 55%, #1a5a0a);
+  box-shadow: 0 0 6px var(--green-glow), 0 0 12px rgba(82,176,67,0.3);
+  animation: pulse-orb 3s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes pulse-orb {
+  0%, 100% { box-shadow: 0 0 6px var(--green-glow), 0 0 12px rgba(82,176,67,0.3); }
+  50%       { box-shadow: 0 0 10px var(--green-glow), 0 0 20px rgba(82,176,67,0.4); }
+}
+
+.gamertag-text {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 0.92rem;
+  letter-spacing: 0.12em;
+  color: var(--text-bright);
+  transition: color 0.15s;
+}
+
+.gamertag-text:hover {
+  color: var(--green-light);
+}
+
+.gamertag-zone {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-left: 0.2rem;
+}
+
+.top-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.gamerscore {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.gs-icon {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.4);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.5rem; color: rgba(255,255,255,0.5);
+}
+
+.top-clock {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+}
+
+/* ============================================================
+   BOTTOM BAR
+   ============================================================ */
+.bottom-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 38px;
+  z-index: 500;
+  background: linear-gradient(to top,
+    rgba(6,6,12,0.98) 0%,
+    rgba(10,10,18,0.85) 100%
+  );
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+}
+
+.btn-hints {
+  display: flex;
+  gap: 1.2rem;
+  align-items: center;
+}
+
+.btn-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.xbtn {
+  width: 17px; height: 17px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.55rem;
+  font-weight: 900;
+  flex-shrink: 0;
+  font-family: 'Rajdhani', sans-serif;
+}
+.xbtn-a { background: var(--green-light); color: #000; }
+.xbtn-b { background: #cc2020; color: #fff; }
+.xbtn-x { background: #2244cc; color: #fff; }
+.xbtn-y { background: #c09010; color: #fff; }
+
+.bottom-right {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+}
+
+/* ============================================================
+   BLADE VIEWPORT
+   ============================================================ */
+.blade-viewport {
+  position: fixed;
+  inset: 46px 0 38px;
+  z-index: 10;
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+/* ============================================================
+   BLADE — base styles
+   The rounded-edge look from the reference image
+   ============================================================ */
+.blade {
+  position: relative;
+  flex-shrink: 0;
+  overflow: hidden;
+  transition: width 0.38s cubic-bezier(0.4,0,0.2,1),
+              flex 0.38s cubic-bezier(0.4,0,0.2,1);
+  cursor: pointer;
+}
+
+/* Rounded outer chrome edge — left side blades */
+.blade.left-blade {
+  border-radius: 0 18px 18px 0;
+  margin-right: -10px;
+}
+
+/* Rounded outer chrome edge — right side blades */
+.blade.right-blade {
+  border-radius: 18px 0 0 18px;
+  margin-left: -10px;
+}
+
+/* Center blade (Home) */
+.blade.center-blade {
+  border-radius: 0;
+  z-index: 20;
+}
+
+.blade.collapsed {
+  width: 58px;
+  cursor: pointer;
+}
+
+.blade.active {
+  flex: 1;
+  cursor: default;
+}
+
+/* Chrome edge gloss on blades */
+.blade::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 6px;
+  pointer-events: none;
+  z-index: 30;
+}
+
+.blade.left-blade::after  { right: 0; background: linear-gradient(to left, rgba(255,255,255,0.18), transparent); }
+.blade.right-blade::after { left: 0;  background: linear-gradient(to right, rgba(255,255,255,0.18), transparent); }
+
+/* ---- BLADE COLORS ---- */
+.blade-home {
+  background: linear-gradient(135deg,
+    #1a2038 0%, #2a3058 40%, #1e2848 70%, #141a30 100%
+  );
+}
+
+.blade-about {
+  background: linear-gradient(135deg,
+    #5c2800 0%, #8a3e00 40%, #7a3400 70%, #4a2000 100%
+  );
+}
+
+.blade-newsletter {
+  background: linear-gradient(135deg,
+    #1a3a14 0%, #2d5a20 40%, #245018 70%, #123010 100%
+  );
+}
+
+.blade-writing {
+  background: linear-gradient(135deg,
+    #221040 0%, #3a1c60 40%, #301550 70%, #180c30 100%
+  );
+}
+
+.blade-coaching {
+  background: linear-gradient(135deg,
+    #0a1830 0%, #162848 40%, #102040 70%, #081020 100%
+  );
+}
+
+/* Active blade gets a gradient sheen */
+.blade.active::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom,
+    rgba(255,255,255,0.06) 0%,
+    transparent 50%,
+    rgba(0,0,0,0.1) 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Top accent bar on active blade */
+.blade-accent-bar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  z-index: 5;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.blade.active .blade-accent-bar { opacity: 1; }
+
+.blade-home .blade-accent-bar     { background: linear-gradient(to right, #4a80ff, #8ab0ff, transparent); }
+.blade-about .blade-accent-bar    { background: linear-gradient(to right, var(--orange-light), #ffb060, transparent); }
+.blade-newsletter .blade-accent-bar { background: linear-gradient(to right, var(--green-light), #90e080, transparent); }
+.blade-writing .blade-accent-bar  { background: linear-gradient(to right, var(--purple-light), #b880ff, transparent); }
+.blade-coaching .blade-accent-bar { background: linear-gradient(to right, var(--blue-light), #80b0ff, transparent); }
+
+/* ============================================================
+   COLLAPSED BLADE TAB
+   ============================================================ */
+.blade-tab {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  padding: 1rem 0;
+  z-index: 5;
+  transition: opacity 0.2s;
+}
+
+.blade.active .blade-tab { opacity: 0; pointer-events: none; }
+
+.tab-icon { font-size: 1.2rem; line-height: 1; }
+
+.tab-label {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  transition: color 0.15s;
+}
+
+.blade.collapsed:hover .tab-label { color: rgba(255,255,255,0.9); }
+.blade.collapsed:hover .blade-accent-bar { opacity: 0.5; }
+
+/* ============================================================
+   BLADE CONTENT
+   ============================================================ */
+.blade-content {
+  position: absolute;
+  inset: 0;
+  padding: 2rem 2.5rem 2rem 2.5rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s 0.15s;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.15) transparent;
+  z-index: 4;
+}
+
+.blade.active .blade-content {
+  opacity: 1;
+  pointer-events: all;
+  animation: contentSlide 0.35s 0.12s cubic-bezier(0.2,0,0.3,1) both;
+}
+
+@keyframes contentSlide {
+  from { opacity: 0; transform: translateX(16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Eyebrow / section label */
+.b-eyebrow {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.b-eyebrow::before {
+  content: '';
+  width: 14px; height: 1px;
+  background: currentColor;
+}
+
+.b-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: clamp(1.8rem, 3vw, 3.2rem);
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-bright);
+  margin-bottom: 0.4rem;
+}
+
+.b-title em {
+  font-style: italic;
+  font-family: 'Rajdhani', sans-serif;
+}
+
+.b-divider {
+  width: 40px; height: 2px;
+  margin: 1rem 0 1.4rem;
+}
+
+.blade-home .b-divider     { background: #6090ff; box-shadow: 0 0 6px rgba(96,144,255,0.5); }
+.blade-about .b-divider    { background: var(--orange-light); box-shadow: 0 0 6px var(--orange-glow); }
+.blade-newsletter .b-divider { background: var(--green-light); box-shadow: 0 0 6px var(--green-glow); }
+.blade-writing .b-divider  { background: var(--purple-light); box-shadow: 0 0 6px rgba(138,80,192,0.5); }
+.blade-coaching .b-divider { background: var(--blue-light); box-shadow: 0 0 6px var(--blue-glow); }
+
+.b-body {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.98rem;
+  line-height: 1.75;
+  color: rgba(255,255,255,0.7);
+  max-width: 580px;
+}
+
+.b-body p { margin-bottom: 0.9rem; }
+.b-body p.lead { font-size: 1.05rem; color: var(--text-bright); }
+
+/* ============================================================
+   ACTION BUTTONS — Xbox style
+   ============================================================ */
+.b-actions {
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+  margin-top: 1.4rem;
+}
+
+.xb {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.55rem 1.3rem;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s;
+  border-radius: 2px;
+}
+
+.xb-primary {
+  background: var(--green-light);
+  color: #040a04;
+  box-shadow: 0 0 10px var(--green-glow);
+}
+.xb-primary:hover {
+  background: #6cd45a;
+  box-shadow: 0 0 18px rgba(82,176,67,0.6);
+}
+
+.xb-orange {
+  background: var(--orange-light);
+  color: #1a0800;
+  box-shadow: 0 0 10px var(--orange-glow);
+}
+.xb-orange:hover { background: #f09030; }
+
+.xb-ghost {
+  background: transparent;
+  color: rgba(255,255,255,0.55);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+.xb-ghost:hover {
+  border-color: rgba(255,255,255,0.5);
+  color: var(--text-white);
+}
+
+/* ============================================================
+   HOME BLADE CONTENT
+   ============================================================ */
+.home-layout {
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  gap: 2rem;
+  align-items: center;
+  height: 100%;
+  max-height: calc(100vh - 130px);
+}
+
+.home-photo {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  aspect-ratio: 3/4;
+  max-height: 54vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.2);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.home-photo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 60%, rgba(26,32,56,0.8) 100%);
+}
+
+/* ============================================================
+   GAMERTAG CARD — About blade header
+   Faithful to the Xbox 360 profile card
+   ============================================================ */
+.gamer-card {
+  background: linear-gradient(135deg,
+    rgba(255,255,255,0.12) 0%,
+    rgba(255,255,255,0.06) 100%
+  );
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 3px;
+  padding: 0.9rem 1.1rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  max-width: 480px;
+}
+
+.gc-avatar {
+  width: 56px; height: 56px;
+  border: 2px solid rgba(255,255,255,0.2);
+  background: linear-gradient(135deg, #3a2010, #6a4020);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.gc-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.gc-info { flex: 1; }
+
+.gc-name {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.05em;
+  color: var(--text-bright);
+  margin-bottom: 0.25rem;
+}
+
+.gc-stars {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 0.2rem;
+}
+
+.star { font-size: 0.8rem; filter: drop-shadow(0 0 3px rgba(255,200,0,0.6)); }
+
+.gc-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.55);
+  letter-spacing: 0.05em;
+}
+
+.gc-row strong { color: var(--text-bright); }
+
+.gc-gs-icon {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.4);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.45rem;
+}
+
+/* ============================================================
+   ABOUT LAYOUT — two-column
+   ============================================================ */
+.about-layout {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 2.5rem;
+  align-items: start;
+  min-width: 0;
+}
+
+/* ============================================================
+   ACHIEVEMENT SYSTEM
+   ============================================================ */
+.game-block {
+  background: rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 1.2rem;
+  overflow: hidden;
+}
+
+.game-header {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.8rem 1rem;
+  background: rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.game-icon {
+  width: 40px; height: 40px;
+  border: 1px solid rgba(255,255,255,0.15);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+  background: rgba(0,0,0,0.3);
+  flex-shrink: 0;
+}
+
+.game-meta { flex: 1; }
+
+.game-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 0.88rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-bright);
+}
+
+.game-progress-bar {
+  height: 4px;
+  background: rgba(255,255,255,0.1);
+  margin-top: 0.3rem;
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+
+.game-progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 1s ease;
+}
+
+.game-progress-text {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.35);
+  margin-top: 0.15rem;
+}
+
+.achievements-list {
+  padding: 0.5rem 0;
+}
+
+.achievement-row {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  transition: background 0.12s;
+}
+
+.achievement-row:last-child { border-bottom: none; }
+.achievement-row:hover { background: rgba(255,255,255,0.04); }
+
+.ach-tile {
+  width: 34px; height: 34px;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(255,255,255,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.ach-tile.locked { filter: grayscale(1) brightness(0.4); }
+
+.ach-info { flex: 1; }
+
+.ach-name {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-bright);
+}
+
+.ach-name.locked { color: rgba(255,255,255,0.3); }
+
+.ach-desc {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.56rem;
+  letter-spacing: 0.05em;
+  color: rgba(255,255,255,0.3);
+  margin-top: 0.1rem;
+}
+
+.ach-gs {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.4);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.ach-gs.earned { color: var(--orange-light); }
+
+/* ============================================================
+   NEWSLETTER BLADE
+   ============================================================ */
+.newsletter-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+.newsletter-frame {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(82,176,67,0.2);
+  padding: 1.5rem;
+}
+
+.nl-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--green-light);
+  margin-bottom: 0.9rem;
+}
+
+/* ============================================================
+   WRITING BLADE
+   ============================================================ */
+.writing-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: rgba(255,255,255,0.06);
+  margin-top: 0.5rem;
+}
+
+.writing-item {
+  background: rgba(20,10,40,0.7);
+  padding: 1rem 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.12s;
+  cursor: pointer;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.writing-item:hover {
+  background: rgba(138,80,192,0.15);
+}
+
+.writing-item.selected {
+  background: rgba(138,80,192,0.25);
+  border-left: 3px solid var(--sel-orange);
+}
+
+.wi-num {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.25);
+  width: 28px;
+  flex-shrink: 0;
+}
+
+.wi-tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--purple-light);
+  width: 100px;
+  flex-shrink: 0;
+}
+
+.wi-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  letter-spacing: 0.04em;
+  color: var(--text-bright);
+  flex: 1;
+  min-width: 0;
+  word-break: break-word;
+}
+
+.wi-arrow {
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.2);
+  transition: color 0.12s;
+}
+
+.writing-item:hover .wi-arrow { color: var(--purple-light); }
+
+/* ============================================================
+   COACHING BLADE — "Launch Game" button
+   ============================================================ */
+.coaching-layout {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+.game-box {
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(74,128,192,0.25);
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.game-box-cover {
+  background: linear-gradient(135deg, #0a1828, #1a3050);
+  border: 1px solid rgba(74,128,192,0.2);
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.game-box-cover::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 70%, rgba(74,128,192,0.3) 0%, transparent 70%);
+}
+
+.game-box-title {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+
+.gbt-main {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-bright);
+  text-shadow: 0 0 20px rgba(74,128,192,0.8);
+  line-height: 1.1;
+}
+
+.gbt-sub {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.3em;
+  color: rgba(74,128,192,0.8);
+  margin-top: 0.3rem;
+}
+
+.game-box-meta {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.3);
+  line-height: 1.8;
+}
+
+.launch-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  background: var(--green-light);
+  color: #040a04;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0.75rem;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s;
+  width: 100%;
+  box-shadow: 0 0 14px var(--green-glow);
+}
+
+.launch-btn:hover {
+  background: #6cd45a;
+  box-shadow: 0 0 22px rgba(82,176,67,0.6);
+}
+
+/* ============================================================
+   HALO SCREEN OVERLAY
+   ============================================================ */
+#halo-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 800;
+  display: none;
+  flex-direction: column;
+  background: #050c1a;
+  overflow: hidden;
+}
+
+#halo-screen.visible { display: flex; }
+
+/* Animated mountain bg for Halo screen */
+.halo-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* Sky gradient */
+.halo-sky {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom,
+    #020810 0%,
+    #040d20 30%,
+    #061530 60%,
+    #0a1e3a 80%,
+    #0e2240 100%
+  );
+}
+
+/* Moving fog layers */
+.halo-fog {
+  position: absolute;
+  bottom: 0;
+  left: -100%;
+  width: 300%;
+  height: 45%;
+  background: linear-gradient(to top,
+    rgba(6,18,40,0.9) 0%,
+    rgba(8,22,45,0.6) 40%,
+    rgba(10,28,55,0.2) 80%,
+    transparent 100%
+  );
+  animation: fogDrift 18s linear infinite;
+}
+
+.halo-fog:nth-child(2) {
+  height: 30%;
+  animation-delay: -9s;
+  opacity: 0.6;
+}
+
+@keyframes fogDrift {
+  from { transform: translateX(0); }
+  to   { transform: translateX(33.33%); }
+}
+
+/* Mountain silhouettes */
+.halo-mountains {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 65%;
+}
+
+/* Mountain SVG layers */
+.mt-back {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  opacity: 0.3;
+}
+
+.mt-mid {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  opacity: 0.5;
+  animation: mtFloat 12s ease-in-out infinite alternate;
+}
+
+.mt-front {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  opacity: 0.8;
+  animation: mtFloat 8s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes mtFloat {
+  from { transform: translateX(-0.5%); }
+  to   { transform: translateX(0.5%); }
+}
+
+/* Lightning flashes */
+.halo-lightning {
+  position: absolute;
+  top: 5%;
+  right: 25%;
+  width: 2px;
+  height: 30%;
+  background: linear-gradient(to bottom, transparent, rgba(180,210,255,0.8), transparent);
+  opacity: 0;
+  animation: lightning 8s 2s ease-in-out infinite;
+  transform-origin: top center;
+  transform: rotate(8deg);
+}
+
+.halo-lightning:nth-child(2) {
+  right: 60%;
+  animation-delay: 5s;
+  transform: rotate(-5deg);
+  height: 20%;
+}
+
+@keyframes lightning {
+  0%, 90%, 100% { opacity: 0; }
+  92%, 95%      { opacity: 0.9; }
+  93%, 94%      { opacity: 0.2; }
+}
+
+/* Stars */
+.halo-stars {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px),
+    radial-gradient(circle, rgba(255,255,255,0.6) 1px, transparent 1px),
+    radial-gradient(circle, rgba(255,255,255,0.4) 1px, transparent 1px);
+  background-size: 200px 200px, 150px 150px, 100px 100px;
+  background-position: 20px 30px, 80px 60px, 40px 90px;
+  opacity: 0.6;
+}
+
+/* Halo UI overlay */
+.halo-ui {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  height: 100%;
+  padding: 3rem;
+  align-items: flex-end;
+  gap: 3rem;
+}
+
+/* Menu list — left side */
+.halo-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 340px;
+  margin-bottom: 2rem;
+}
+
+.halo-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.7);
+  background: rgba(8,20,45,0.7);
+  padding: 0.75rem 1.2rem;
+  cursor: pointer;
+  transition: all 0.12s;
+  text-decoration: none;
+  border-left: 3px solid transparent;
+  position: relative;
+}
+
+.halo-menu-item:hover,
+.halo-menu-item.selected {
+  background: rgba(232,120,32,0.85);
+  color: #fff;
+  border-left-color: #fff;
+}
+
+.halo-menu-item .hmi-icon {
+  width: 18px;
+  margin-right: 0.8rem;
+  font-size: 0.85rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* Right side — title/description */
+.halo-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  margin-bottom: 2.5rem;
+}
+
+.halo-game-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: clamp(3rem, 6vw, 6rem);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(200,225,255,0.9);
+  text-shadow:
+    0 0 30px rgba(100,160,255,0.6),
+    0 0 60px rgba(80,130,220,0.3);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.halo-game-sub {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(150,190,255,0.5);
+  margin-bottom: 1rem;
+}
+
+.halo-desc {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.88rem;
+  color: rgba(200,220,255,0.5);
+  line-height: 1.7;
+  max-width: 400px;
+}
+
+/* Back button */
+.halo-back {
+  position: absolute;
+  bottom: 1rem;
+  left: 3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  cursor: pointer;
+  transition: color 0.15s;
+  z-index: 20;
+  background: none;
+  border: none;
+}
+
+.halo-back:hover { color: rgba(255,255,255,0.7); }
+
+/* ============================================================
+   NAV ARROWS — left/right outside blades
+   ============================================================ */
+.nav-arrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 400;
+  width: 32px;
+  height: 60px;
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-size: 1rem;
+  color: rgba(255,255,255,0.4);
+  font-family: 'Rajdhani', sans-serif;
+}
+
+.nav-arrow:hover { background: rgba(255,255,255,0.12); color: white; }
+.nav-arrow.left  { left: 0; border-radius: 0 4px 4px 0; }
+.nav-arrow.right { right: 0; border-radius: 4px 0 0 4px; }
+
+/* ============================================================
+   CONTACT / GAMER PROFILE SCREEN
+   Styled as Xbox 360 "Message a Player" UI
+   ============================================================ */
+
+#contact-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 800;
+  display: none;
+  flex-direction: column;
+  background: linear-gradient(160deg, #0e0e18 0%, #141420 50%, #0a0a14 100%);
+  overflow: hidden;
+  animation: contactFadeIn 0.3s ease both;
+}
+
+#contact-screen.visible { display: flex; }
+
+@keyframes contactFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Header bar — looks like Xbox guide overlay header */
+.contact-header {
+  height: 44px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.85), rgba(0,0,0,0.5));
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  padding: 0 1.5rem;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+.contact-header-icon {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #8fff70, var(--green-light) 55%, #1a5a0a);
+  box-shadow: 0 0 8px var(--green-glow);
+  flex-shrink: 0;
+}
+
+.contact-header-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 0.88rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-bright);
+}
+
+.contact-header-sub {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  color: var(--text-muted);
+  margin-left: auto;
+}
+
+/* Main layout */
+.contact-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  overflow: hidden;
+}
+
+/* ---- LEFT PANEL: Gamer Profile ---- */
+.contact-profile {
+  background: rgba(0,0,0,0.4);
+  border-right: 1px solid rgba(255,255,255,0.07);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 1.5rem 1.2rem;
+  gap: 1.2rem;
+}
+
+/* Big profile card — like the Xbox 360 player profile */
+.profile-card {
+  background: linear-gradient(135deg, #1a3a14 0%, #2d5a20 100%);
+  border: 1px solid rgba(82,176,67,0.3);
+  padding: 1.2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(to right, var(--green-light), transparent);
+}
+
+.profile-card-top {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.profile-avatar {
+  width: 60px; height: 60px;
+  border: 2px solid rgba(82,176,67,0.5);
+  background: linear-gradient(135deg, #3a2010, #6a4020);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.profile-avatar-inner {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.profile-name-block { flex: 1; }
+
+.profile-gamertag {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: 0.08em;
+  color: var(--text-bright);
+  margin-bottom: 0.2rem;
+}
+
+.profile-status {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--green-light);
+}
+
+.status-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--green-light);
+  box-shadow: 0 0 5px var(--green-glow);
+  animation: pulse-orb 2.5s ease-in-out infinite;
+}
+
+.profile-stars {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 0.3rem;
+}
+
+.profile-stats-row {
+  display: flex;
+  gap: 1rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid rgba(82,176,67,0.15);
+}
+
+.pstat {
+  flex: 1;
+  text-align: center;
+}
+
+.pstat-num {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text-bright);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+}
+
+.pstat-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: 0.1rem;
+}
+
+/* Zone badge */
+.zone-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 0.3rem 0.8rem;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-top: 0.5rem;
+}
+
+/* Recently Played — newsletter issues as games */
+.recently-played-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.6rem;
+}
+
+.recent-item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.6rem 0.8rem;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.05);
+  margin-bottom: 0.4rem;
+  cursor: default;
+  transition: background 0.12s;
+}
+
+.recent-item:hover { background: rgba(255,255,255,0.06); }
+
+.recent-icon {
+  width: 36px; height: 36px;
+  background: rgba(82,176,67,0.12);
+  border: 1px solid rgba(82,176,67,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.recent-info { flex: 1; min-width: 0; }
+
+.recent-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-bright);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.03em;
+}
+
+.recent-sub {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-top: 0.1rem;
+}
+
+.recent-gs {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--green-light);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+/* Send friend request button */
+.friend-req-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 0.65rem 0.9rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+
+.friend-req-btn:hover {
+  background: rgba(82,176,67,0.1);
+  border-color: rgba(82,176,67,0.3);
+  color: var(--text-white);
+}
+
+/* ---- RIGHT PANEL: Message Composer ---- */
+.contact-composer {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 1.5rem 2rem;
+  gap: 1.2rem;
+}
+
+/* Reason quick-select — like game invite options */
+.reason-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.6rem;
+}
+
+.reason-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+
+.reason-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 0.7rem 0.9rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.12s;
+  text-align: left;
+}
+
+.reason-btn:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.25);
+  color: var(--text-white);
+}
+
+.reason-btn.selected {
+  background: rgba(232,120,32,0.2);
+  border-color: var(--sel-orange);
+  color: var(--text-bright);
+}
+
+.reason-btn.selected .reason-icon { filter: none; }
+
+.reason-btn.primary-reason {
+  background: rgba(82,176,67,0.12);
+  border-color: rgba(82,176,67,0.35);
+  color: var(--green-light);
+}
+
+.reason-btn.primary-reason:hover {
+  background: rgba(82,176,67,0.2);
+}
+
+.reason-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+  filter: grayscale(0.5) brightness(0.8);
+}
+
+/* Message form — Xbox message composer style */
+.msg-section-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.6rem;
+}
+
+.msg-to-row {
+  display: flex;
+  align-items: center;
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-bottom: none;
+  padding: 0.6rem 1rem;
+  gap: 0.8rem;
+}
+
+.msg-to-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  width: 40px;
+}
+
+.msg-to-value {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 0.88rem;
+  letter-spacing: 0.08em;
+  color: var(--green-light);
+}
+
+.msg-subject-row {
+  display: flex;
+  align-items: center;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-bottom: none;
+  padding: 0.5rem 1rem;
+  gap: 0.8rem;
+}
+
+.msg-subject-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: var(--text-bright);
+  padding: 0;
+}
+
+.msg-subject-input::placeholder { color: var(--text-muted); }
+
+.msg-body-wrap {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 0.8rem 1rem;
+  position: relative;
+}
+
+.msg-body-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.92rem;
+  line-height: 1.7;
+  letter-spacing: 0.03em;
+  color: var(--text-bright);
+  resize: none;
+  min-height: 120px;
+}
+
+.msg-body-input::placeholder { color: var(--text-muted); }
+
+/* Character count — like old Xbox message limit */
+.msg-char-count {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  text-align: right;
+  margin-top: 0.4rem;
+}
+
+.msg-char-count.warning { color: var(--sel-orange); }
+
+/* Name / email fields */
+.msg-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.msg-field {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 0.6rem 1rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.88rem;
+  letter-spacing: 0.05em;
+  color: var(--text-bright);
+  outline: none;
+  transition: border-color 0.15s;
+  width: 100%;
+}
+
+.msg-field::placeholder { color: var(--text-muted); }
+.msg-field:focus { border-color: rgba(82,176,67,0.5); box-shadow: 0 0 8px rgba(82,176,67,0.15); }
+
+/* Send button — big Xbox A button energy */
+.send-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+  background: var(--green-light);
+  color: #040a04;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0.85rem;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 0 16px var(--green-glow);
+  transition: all 0.15s;
+}
+
+.send-btn:hover {
+  background: #6cd45a;
+  box-shadow: 0 0 24px rgba(82,176,67,0.55);
+}
+
+/* Confirmation state */
+.send-confirm {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+  gap: 1rem;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(82,176,67,0.2);
+}
+
+.send-confirm.visible { display: flex; }
+
+.confirm-icon { font-size: 2.5rem; }
+
+.confirm-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 1.3rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--green-light);
+  text-shadow: 0 0 12px var(--green-glow);
+}
+
+.confirm-sub {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  line-height: 1.7;
+}
+
+/* Contact screen bottom bar */
+.contact-footer {
+  height: 38px;
+  background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.5));
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  flex-shrink: 0;
+}
+
+/* ---- MOBILE: contact screen ---- */
+@media (max-width: 700px) {
+  .contact-body {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  .contact-profile {
+    border-right: none;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    padding: 1rem;
+    gap: 0.8rem;
+    max-height: 45vh;
+    overflow-y: auto;
+  }
+
+  .contact-composer {
+    padding: 1rem;
+    gap: 0.9rem;
+  }
+
+  .reason-grid { grid-template-columns: 1fr 1fr; gap: 0.4rem; }
+  .reason-btn { padding: 0.55rem 0.7rem; font-size: 0.72rem; }
+  .msg-field-row { grid-template-columns: 1fr; }
+  .profile-card-top { gap: 0.7rem; }
+  .profile-avatar { width: 48px; height: 48px; }
+  .recently-played-label { display: none; }
+  .recent-item:not(:first-child) { display: none; }
+}
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
+
+/* ============================================================
+   RESPONSIVE — overflow fixes + mobile layout
+   ============================================================ */
+
+/* Tablet */
+@media (max-width: 860px) {
+  .home-layout,
+  .about-layout,
+  .newsletter-layout,
+  .coaching-layout { grid-template-columns: 1fr; }
+  .home-photo { display: none; }
+  .blade.collapsed { width: 44px; }
+  .blade-content { padding: 1.2rem; }
+}
+
+/* Phone */
+@media (max-width: 600px) {
+  /* Top / bottom bars */
+  .top-bar { padding: 0 0.9rem; height: 42px; }
+  .gamertag-zone { display: none; }
+  .gamerscore { font-size: 0.7rem; }
+  .top-clock { display: none; }
+  .bottom-bar { padding: 0 0.9rem; height: 36px; }
+  .btn-hints .btn-hint:last-child { display: none; }
+  .bottom-right { display: none; }
+
+  /* Viewport */
+  .blade-viewport { inset: 42px 0 36px; }
+
+  /* Collapsed blade tabs */
+  .blade.collapsed { width: 32px; }
+  .tab-label { font-size: 0.48rem; letter-spacing: 0.1em; }
+  .tab-icon { font-size: 1rem; }
+  .blade.left-blade  { border-radius: 0 12px 12px 0; margin-right: -6px; }
+  .blade.right-blade { border-radius: 12px 0 0 12px; margin-left: -6px; }
+
+  /* Active blade content — key: constrain width so nothing escapes */
+  .blade-content {
+    padding: 1rem 0.9rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+  }
+
+  /* All text containers need overflow protection */
+  .b-body, .b-title, .b-eyebrow,
+  .blade-content * {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .b-eyebrow { font-size: 0.52rem; margin-bottom: 0.3rem; }
+  .b-title { font-size: clamp(1.4rem, 6vw, 2rem); margin-bottom: 0.2rem; word-break: break-word; }
+  .b-divider { margin: 0.7rem 0 1rem; width: 30px; }
+  .b-body { font-size: 0.88rem; line-height: 1.65; word-break: break-word; }
+  .b-body p { margin-bottom: 0.7rem; }
+  .b-actions { margin-top: 1rem; gap: 0.5rem; flex-wrap: wrap; }
+  .xb { font-size: 0.7rem; padding: 0.5rem 1rem; }
+
+  /* Home */
+  .home-layout { grid-template-columns: 1fr; gap: 1rem; }
+  .home-photo { display: none; }
+
+  /* About — stack, give both columns full width */
+  .about-layout {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+    overflow: hidden;
+  }
+
+  /* Gamertag card */
+  .gamer-card { padding: 0.7rem 0.8rem; gap: 0.7rem; margin-bottom: 1rem; max-width: 100%; }
+  .gc-avatar { width: 44px; height: 44px; }
+  .gc-name { font-size: 0.88rem; }
+  .star { font-size: 0.7rem; }
+  .gc-row { font-size: 0.65rem; }
+
+  /* Achievement blocks */
+  .game-block { margin-bottom: 0.8rem; overflow: hidden; }
+  .game-header { padding: 0.6rem 0.8rem; gap: 0.7rem; }
+  .game-icon { width: 32px; height: 32px; font-size: 1rem; }
+  .game-title { font-size: 0.78rem; }
+  .game-progress-text { font-size: 0.52rem; }
+  .achievement-row { padding: 0.4rem 0.8rem; gap: 0.6rem; }
+  .ach-tile { width: 28px; height: 28px; font-size: 0.85rem; flex-shrink: 0; }
+  .ach-name { font-size: 0.7rem; word-break: break-word; }
+  .ach-desc { font-size: 0.52rem; word-break: break-word; }
+  .ach-gs { font-size: 0.65rem; flex-shrink: 0; }
+  .ach-info { min-width: 0; flex: 1; overflow: hidden; }
+
+  /* Writing blade — the main overflow culprit on mobile */
+  .writing-list { overflow: hidden; }
+
+  .writing-item {
+    padding: 0.8rem 0.7rem;
+    gap: 0.6rem;
+    overflow: hidden;
+    min-width: 0;
+    flex-wrap: nowrap;
+  }
+
+  /* Hide num and tag on small screens — title only */
+  .wi-num { display: none; }
+  .wi-tag { display: none; }
+
+  .wi-title {
+    font-size: 0.82rem;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    /* Switch to wrap for very small: */
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .wi-arrow { flex-shrink: 0; }
+
+  /* Newsletter */
+  .newsletter-layout { grid-template-columns: 1fr; gap: 1.2rem; }
+  .newsletter-frame { padding: 1rem; }
+
+  /* Coaching */
+  .coaching-layout { grid-template-columns: 1fr; gap: 1.2rem; }
+  .game-box { padding: 0.9rem; }
+  .game-box-cover { height: 100px; }
+  .gbt-main { font-size: 1.1rem; }
+  .game-box-meta { font-size: 0.55rem; line-height: 1.6; }
+  .launch-btn { font-size: 0.78rem; padding: 0.65rem; }
+
+  /* Nav arrows */
+  .nav-arrow { width: 28px; height: 50px; font-size: 0.85rem; }
+
+  /* Halo screen */
+  .halo-ui { flex-direction: column; justify-content: flex-end; padding: 1.5rem; gap: 1.5rem; }
+  .halo-menu { min-width: unset; width: 100%; margin-bottom: 0; }
+  .halo-menu-item { font-size: 0.82rem; padding: 0.65rem 1rem; }
+  .halo-game-title { font-size: clamp(1.8rem, 7vw, 3rem); }
+  .halo-game-sub { font-size: 0.62rem; }
+  .halo-desc { font-size: 0.78rem; max-width: 100%; }
+  .halo-right { margin-bottom: 0; }
+  .halo-back { bottom: 0.5rem; left: 1.5rem; font-size: 0.62rem; }
+
+  /* Boot */
+  .mountain-svg { width: 160px; height: 120px; }
+  .boot-name { font-size: 1.1rem; }
+  .boot-tagline { font-size: 0.75rem; }
+
+  /* Contact screen */
+  .contact-body { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+  .contact-profile {
+    border-right: none;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    padding: 1rem;
+    gap: 0.8rem;
+    max-height: 42vh;
+    overflow-y: auto;
+  }
+  .contact-composer { padding: 1rem; gap: 0.9rem; }
+  .reason-grid { grid-template-columns: 1fr 1fr; gap: 0.4rem; }
+  .reason-btn { padding: 0.55rem 0.7rem; font-size: 0.72rem; }
+  .msg-field-row { grid-template-columns: 1fr; }
+  .profile-card-top { gap: 0.7rem; }
+  .profile-avatar { width: 48px; height: 48px; }
+  .recently-played-label { display: none; }
+  .recent-item:not(:first-child) { display: none; }
+}
+
+/* Very small phones */
+@media (max-width: 380px) {
+  .blade.collapsed { width: 26px; }
+  .tab-icon { font-size: 0.85rem; }
+  .tab-label { display: none; }
+  .blade-content { padding: 0.8rem 0.7rem; }
+  .b-title { font-size: clamp(1.2rem, 6vw, 1.7rem); }
+  .writing-item { padding: 0.7rem 0.5rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     BOOT SCREEN
+     ============================================================ -->
+<div id="boot">
+  <div class="boot-glow"></div>
+
+  <div class="boot-logo">
+    <!-- Mountain SVG logo — faithful to TheIanWill mark -->
+    <svg class="mountain-svg" viewBox="0 0 220 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="orangeGlow" cx="50%" cy="80%" r="60%">
+          <stop offset="0%" stop-color="#ff8020" stop-opacity="0.7"/>
+          <stop offset="50%" stop-color="#e06010" stop-opacity="0.3"/>
+          <stop offset="100%" stop-color="#c04000" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="peakGlow" cx="50%" cy="0%" r="80%">
+          <stop offset="0%" stop-color="#ffb060" stop-opacity="0.8"/>
+          <stop offset="100%" stop-color="#e06010" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <!-- Glow behind mountains -->
+      <ellipse cx="110" cy="130" rx="100" ry="50" fill="url(#orangeGlow)"/>
+      <!-- Back mountain range -->
+      <path d="M10 140 L55 65 L75 85 L95 50 L115 75 L135 40 L155 70 L175 55 L210 140Z"
+            fill="#c05800" opacity="0.35"/>
+      <!-- Main peaks — matches logo silhouette -->
+      <path d="M20 145 L60 72 L78 90 L98 55 L118 80 L140 38 L162 68 L180 52 L200 145Z"
+            fill="#d06800" opacity="0.6"/>
+      <!-- Front bold range -->
+      <path d="M30 148 L65 78 L82 94 L102 58 L122 82 L144 40 L166 72 L184 56 L198 148Z"
+            fill="#e07818"/>
+      <!-- Peak highlights -->
+      <path d="M144 40 L152 55 L136 55Z" fill="#ffb060" opacity="0.9"/>
+      <path d="M102 58 L109 70 L95 70Z" fill="#ffb060" opacity="0.7"/>
+      <!-- Blue river/wave accent under mountains -->
+      <path d="M70 148 Q110 142 150 148" stroke="#4a90c0" stroke-width="2" fill="none" opacity="0.7"/>
+    </svg>
+  </div>
+
+  <div class="boot-name">IAN WILLIAMS</div>
+  <div class="boot-tagline">Chase Fulfillment</div>
+</div>
+
+<!-- ============================================================
+     CHROME BACKGROUND
+     ============================================================ -->
+<div class="chrome-bg"></div>
+
+<!-- ============================================================
+     TOP BAR
+     ============================================================ -->
+<div class="top-bar">
+  <div class="gamertag-area">
+    <div class="online-orb"></div>
+    <div>
+      <span class="gamertag-text" onclick="selectBlade(0)" style="cursor:pointer;" title="View Profile">iWill434</span>
+      <span class="gamertag-zone">· Underground</span>
+    </div>
+  </div>
+  <div class="top-bar-right">
+    <div class="gamerscore">
+      <div class="gs-icon">G</div>
+      37,195
+    </div>
+    <div class="top-clock" id="clock">--:-- --</div>
+  </div>
+</div>
+
+<!-- NAV ARROWS -->
+<div class="nav-arrow left" onclick="shiftLeft()">&#9664;</div>
+<div class="nav-arrow right" onclick="shiftRight()">&#9654;</div>
+
+<!-- ============================================================
+     BLADE VIEWPORT
+     5 blades: About | Newsletter | HOME | Writing | Coaching
+     ============================================================ -->
+<div class="blade-viewport" id="bladeViewport">
+
+  <!-- BLADE: ABOUT (far left) -->
+  <div class="blade blade-about left-blade collapsed" id="blade-0" onclick="selectBlade(0)">
+    <div class="blade-accent-bar"></div>
+    <div class="blade-tab">
+      <div class="tab-icon">👤</div>
+      <div class="tab-label">About</div>
+    </div>
+    <div class="blade-content">
+      <div class="b-eyebrow">About</div>
+      <div class="b-title">Ian<br>Williams</div>
+      <div class="b-divider"></div>
+
+      <!-- Gamertag Card -->
+      <div class="gamer-card">
+        <div class="gc-avatar">
+          <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" width="56" height="56">
+            <rect width="56" height="56" fill="#3a2010"/>
+            <path d="M8 44 L20 22 L26 30 L32 18 L38 26 L44 14 L50 44Z" fill="#e07818" opacity="0.7"/>
+            <path d="M10 46 L22 24 L28 32 L34 20 L40 28 L46 16 L52 46Z" fill="#e07818"/>
+          </svg>
+        </div>
+        <div class="gc-info">
+          <div class="gc-name">iWill434</div>
+          <div class="gc-stars">
+            <span class="star">★</span><span class="star">★</span><span class="star">★</span>
+            <span class="star">★</span><span class="star">★</span>
+          </div>
+          <div class="gc-row">
+            <span class="gc-gs-icon">G</span>
+            <span>Gamerscore</span>
+            <strong>37,195</strong>
+          </div>
+          <div class="gc-row">
+            Zone &nbsp;<strong>Underground</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="about-layout">
+        <div class="b-body">
+          <p class="lead">I grew up with a guitar in one hand and a controller in the other. At some point, I put them both down and picked up a job title instead.</p>
+          <p>Two jobs. A lumber business. A husband and a father. Someone who knows what it means to carry real weight and still hear that older voice asking: <em>is this all there is?</em></p>
+          <p>The Sunday Strategy came out of the margins — early mornings, stolen Sundays, questions I kept returning to about leverage and what it costs to build a life that actually belongs to you.</p>
+          <p>I'm writing for the man who's already doing a lot, and suspects he could do it all differently if he just had a clearer map.</p>
+          <div class="b-actions">
+            <a href="https://x.com/theianwill" class="xb xb-orange" target="_blank">
+              <span class="xbtn xbtn-a">A</span> Follow on X
+            </a>
+          </div>
+        </div>
+
+        <!-- ACHIEVEMENT SYSTEM -->
+        <div>
+          <!-- X / Twitter as a "game" -->
+          <div class="game-block">
+            <div class="game-header">
+              <div class="game-icon">𝕏</div>
+              <div class="game-meta">
+                <div class="game-title">@theianwill</div>
+                <div class="game-progress-bar">
+                  <div class="game-progress-fill" style="width:10%; background: linear-gradient(to right,#e07818,#ffb060);"></div>
+                </div>
+                <div class="game-progress-text">5 / 50 achievements — 140G</div>
+              </div>
+            </div>
+            <div class="achievements-list">
+              <div class="achievement-row">
+                <div class="ach-tile">🎯</div>
+                <div class="ach-info">
+                  <div class="ach-name">First Contact</div>
+                  <div class="ach-desc">Posted first tweet</div>
+                </div>
+                <div class="ach-gs earned"><div class="gc-gs-icon">G</div> 10</div>
+              </div>
+              <div class="achievement-row">
+                <div class="ach-tile">📢</div>
+                <div class="ach-info">
+                  <div class="ach-name">Signal Boost</div>
+                  <div class="ach-desc">Hit 25 followers</div>
+                </div>
+                <div class="ach-gs earned"><div class="gc-gs-icon">G</div> 25</div>
+              </div>
+              <div class="achievement-row">
+                <div class="ach-tile">✍️</div>
+                <div class="ach-info">
+                  <div class="ach-name">Content Machine</div>
+                  <div class="ach-desc">Published 250 posts</div>
+                </div>
+                <div class="ach-gs earned"><div class="gc-gs-icon">G</div> 50</div>
+              </div>
+              <div class="achievement-row">
+                <div class="ach-tile locked">🔒</div>
+                <div class="ach-info">
+                  <div class="ach-name locked">Going Viral</div>
+                  <div class="ach-desc">Reach 1,000 followers</div>
+                </div>
+                <div class="ach-gs"><div class="gc-gs-icon">G</div> 100</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Newsletter as a "game" -->
+          <div class="game-block">
+            <div class="game-header">
+              <div class="game-icon">📬</div>
+              <div class="game-meta">
+                <div class="game-title">Sunday Strategy</div>
+                <div class="game-progress-bar">
+                  <div class="game-progress-fill" style="width:8%; background: linear-gradient(to right, var(--green-light), #90e080);"></div>
+                </div>
+                <div class="game-progress-text">4 / 50 achievements — 95G</div>
+              </div>
+            </div>
+            <div class="achievements-list">
+              <div class="achievement-row">
+                <div class="ach-tile">🚀</div>
+                <div class="ach-info">
+                  <div class="ach-name">Launch Day</div>
+                  <div class="ach-desc">Published first newsletter</div>
+                </div>
+                <div class="ach-gs earned"><div class="gc-gs-icon">G</div> 10</div>
+              </div>
+              <div class="achievement-row">
+                <div class="ach-tile">👥</div>
+                <div class="ach-info">
+                  <div class="ach-name">Found My People</div>
+                  <div class="ach-desc">Hit 5 subscribers</div>
+                </div>
+                <div class="ach-gs earned"><div class="gc-gs-icon">G</div> 25</div>
+              </div>
+              <div class="achievement-row">
+                <div class="ach-tile">📅</div>
+                <div class="ach-info">
+                  <div class="ach-name">20 Sundays Strong</div>
+                  <div class="ach-desc">Published 20 newsletters</div>
+                </div>
+                <div class="ach-gs earned"><div class="gc-gs-icon">G</div> 50</div>
+              </div>
+              <div class="achievement-row">
+                <div class="ach-tile">💡</div>
+                <div class="ach-info">
+                  <div class="ach-name">Reclaimed</div>
+                  <div class="ach-desc">Returned to creative work after years away</div>
+                </div>
+                <div class="ach-gs earned"><div class="gc-gs-icon">G</div> 10</div>
+              </div>
+              <div class="achievement-row">
+                <div class="ach-tile locked">🔒</div>
+                <div class="ach-info">
+                  <div class="ach-name locked">The Slow Build</div>
+                  <div class="ach-desc">Hit 250 subscribers</div>
+                </div>
+                <div class="ach-gs"><div class="gc-gs-icon">G</div> 100</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLADE: NEWSLETTER (left-center) -->
+  <div class="blade blade-newsletter left-blade collapsed" id="blade-1" onclick="selectBlade(1)">
+    <div class="blade-accent-bar"></div>
+    <div class="blade-tab">
+      <div class="tab-icon">📬</div>
+      <div class="tab-label">Newsletter</div>
+    </div>
+    <div class="blade-content">
+      <div class="b-eyebrow">The Sunday Strategy</div>
+      <div class="b-title">Weekly<br>Dispatch</div>
+      <div class="b-divider"></div>
+      <div class="newsletter-layout">
+        <div class="b-body">
+          <p class="lead">Every Sunday morning. Strategy, philosophy, and honest accounting — delivered before the week begins.</p>
+          <p>No noise. No hustle theater. Just the work. For ambitious fathers playing the long game in the margins.</p>
+          <p style="font-family:'Share Tech Mono',monospace;font-size:0.62rem;letter-spacing:0.1em;color:rgba(82,176,67,0.6)">FREE · POWERED BY BEEHIIV · EVERY SUNDAY</p>
+          <div class="b-actions">
+            <a href="https://theianwill.beehiiv.com/" class="xb xb-primary" target="_blank">
+              <span class="xbtn xbtn-a">A</span> View Archive
+            </a>
+          </div>
+        </div>
+        <div class="newsletter-frame">
+          <div class="nl-label">Subscribe — It's Free</div>
+          <iframe src="https://embeds.beehiiv.com/8998fa0b-d555-4700-84a1-ee10826b18b7?slim=true"
+            data-test-id="beehiiv-embed" height="52" frameborder="0" scrolling="no"
+            style="width:100%;background-color:transparent;"></iframe>
+          <p style="font-family:'Share Tech Mono',monospace;font-size:0.58rem;letter-spacing:0.08em;color:rgba(255,255,255,0.25);margin-top:0.8rem">
+            Join current subscribers. Unsubscribe anytime.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLADE: HOME (center — default active) -->
+  <div class="blade blade-home center-blade active" id="blade-2" onclick="selectBlade(2)">
+    <div class="blade-accent-bar"></div>
+    <div class="blade-tab">
+      <div class="tab-icon">🏠</div>
+      <div class="tab-label">Home</div>
+    </div>
+    <div class="blade-content">
+      <div class="home-layout">
+        <div>
+          <div class="b-eyebrow">Ian Williams — Charlottesville, VA</div>
+          <div class="b-title" style="font-size:clamp(2.5rem,4.5vw,5rem)">
+            The Sunday<br><em style="color:#7090ff">Strategy</em>
+          </div>
+          <div class="b-divider" style="background:#6090ff;box-shadow:0 0 8px rgba(96,144,255,0.5)"></div>
+          <div class="b-body">
+            <p class="lead">Building leverage in the margins — for ambitious fathers who refuse to outsource their ambition or surrender to the grind.</p>
+            <p>A weekly dispatch on living deliberately under real constraints. Strategy, philosophy, and honest accounting.</p>
+          </div>
+          <div class="b-actions">
+            <a href="#" onclick="selectBlade(1);return false;" class="xb xb-primary">
+              <span class="xbtn xbtn-a">A</span> Newsletter
+            </a>
+            <a href="#" onclick="openContactScreen();return false;" class="xb xb-ghost">
+              <span class="xbtn xbtn-x">X</span> Work With Me
+            </a>
+            <a href="https://x.com/theianwill" class="xb xb-ghost" target="_blank">@theianwill</a>
+          </div>
+        </div>
+        <div class="home-photo">
+          <span>[ YOUR PHOTO ]</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLADE: WRITING (right-center) -->
+  <div class="blade blade-writing right-blade collapsed" id="blade-3" onclick="selectBlade(3)">
+    <div class="blade-accent-bar"></div>
+    <div class="blade-tab">
+      <div class="tab-icon">✍️</div>
+      <div class="tab-label">Writing</div>
+    </div>
+    <div class="blade-content">
+      <div class="b-eyebrow">Writing</div>
+      <div class="b-title">From the<br><em style="color:var(--purple-light)">Archive</em></div>
+      <div class="b-divider"></div>
+      <div class="writing-list">
+        <a href="https://theianwill.beehiiv.com/" class="writing-item selected" target="_blank" onclick="event.stopPropagation()">
+          <span class="wi-num">01</span>
+          <span class="wi-tag">Strategy</span>
+          <span class="wi-title">The 20-Minute Window That Changes Everything</span>
+          <span class="wi-arrow">&#9654;</span>
+        </a>
+        <a href="https://theianwill.beehiiv.com/" class="writing-item" target="_blank" onclick="event.stopPropagation()">
+          <span class="wi-num">04</span>
+          <span class="wi-tag">Fatherhood</span>
+          <span class="wi-title">The Ambitious Father's Dilemma</span>
+          <span class="wi-arrow">&#9654;</span>
+        </a>
+        <a href="https://theianwill.beehiiv.com/" class="writing-item" target="_blank" onclick="event.stopPropagation()">
+          <span class="wi-num">07</span>
+          <span class="wi-tag">Philosophy</span>
+          <span class="wi-title">Explicit Rules vs. the Life You Actually Live</span>
+          <span class="wi-arrow">&#9654;</span>
+        </a>
+        <a href="https://theianwill.beehiiv.com/" class="writing-item" target="_blank" onclick="event.stopPropagation()">
+          <span class="wi-num">11</span>
+          <span class="wi-tag">Mindset</span>
+          <span class="wi-title">Algorithmic Domestication and How to Escape It</span>
+          <span class="wi-arrow">&#9654;</span>
+        </a>
+        <a href="https://theianwill.beehiiv.com/" class="writing-item" target="_blank" onclick="event.stopPropagation()">
+          <span class="wi-num">15</span>
+          <span class="wi-tag">Identity</span>
+          <span class="wi-title">The Single-Player RPG Model for Your Life</span>
+          <span class="wi-arrow">&#9654;</span>
+        </a>
+      </div>
+      <div style="margin-top:1.2rem">
+        <a href="https://theianwill.beehiiv.com/" class="xb xb-ghost" target="_blank" onclick="event.stopPropagation()">
+          View All Issues →
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLADE: COACHING (far right) -->
+  <div class="blade blade-coaching right-blade collapsed" id="blade-4" onclick="selectBlade(4)">
+    <div class="blade-accent-bar"></div>
+    <div class="blade-tab">
+      <div class="tab-icon">🎮</div>
+      <div class="tab-label">Coaching</div>
+    </div>
+    <div class="blade-content">
+      <div class="b-eyebrow">Work With Me</div>
+      <div class="b-title">1:1<br><em style="color:var(--blue-light)">Coaching</em></div>
+      <div class="b-divider"></div>
+      <div class="coaching-layout">
+        <div class="b-body">
+          <p class="lead">A structured engagement for men who are done waiting for the right time and ready to build the right systems.</p>
+          <p>Limited spots. High signal. No fluff. Strategy, accountability, and a map for getting your life to reflect your actual priorities.</p>
+          <p style="font-family:'Share Tech Mono',monospace;font-size:0.62rem;letter-spacing:0.1em;color:rgba(74,128,192,0.7)">► ACCEPTING WAITLIST APPLICATIONS NOW</p>
+        </div>
+
+        <!-- Game box -->
+        <div>
+          <div class="game-box">
+            <div class="game-box-cover">
+              <div class="game-box-title">
+                <div class="gbt-main">STRATEGY<br>SESSION</div>
+                <div class="gbt-sub">Ian Williams · 2025</div>
+              </div>
+            </div>
+            <div class="game-box-meta">
+              Developer: Ian Williams<br>
+              Genre: Life Strategy / Coaching<br>
+              Players: 1-2 · Online Required<br>
+              Rating: For Ambitious Fathers
+            </div>
+            <button class="launch-btn" onclick="openHaloScreen(); event.stopPropagation();">
+              <span class="xbtn xbtn-a">A</span>
+              LAUNCH GAME
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end blade-viewport -->
+
+<!-- ============================================================
+     BOTTOM BAR
+     ============================================================ -->
+<div class="bottom-bar">
+  <div class="btn-hints">
+    <div class="btn-hint"><div class="xbtn xbtn-a">A</div> Select</div>
+    <div class="btn-hint" onclick="selectBlade(2)" style="cursor:pointer;"><div class="xbtn xbtn-b">B</div> Back</div>
+    <div class="btn-hint">◄ ► Navigate blades</div>
+  </div>
+  <div class="bottom-right">theianwill.com</div>
+</div>
+
+<!-- ============================================================
+     HALO SCREEN
+     ============================================================ -->
+<div id="halo-screen">
+  <div class="halo-bg">
+    <div class="halo-sky"></div>
+    <div class="halo-stars"></div>
+    <div class="halo-fog"></div>
+    <div class="halo-fog"></div>
+    <div class="halo-lightning"></div>
+    <div class="halo-lightning"></div>
+
+    <!-- Mountain layers as SVGs -->
+    <div class="halo-mountains">
+      <!-- Back mountains -->
+      <svg class="mt-back" viewBox="0 0 1440 400" preserveAspectRatio="none" height="100%">
+        <path d="M0 400 L80 200 L160 260 L240 140 L360 220 L440 100 L540 180 L640 80 L720 160 L800 60 L900 140 L1000 200 L1100 120 L1200 180 L1300 100 L1440 200 L1440 400Z" fill="#0a1828"/>
+      </svg>
+      <!-- Mid mountains -->
+      <svg class="mt-mid" viewBox="0 0 1440 400" preserveAspectRatio="none" height="100%">
+        <path d="M0 400 L120 240 L200 290 L300 160 L420 250 L520 120 L640 200 L760 90 L860 170 L960 250 L1060 140 L1180 210 L1300 130 L1440 220 L1440 400Z" fill="#0e1e38"/>
+      </svg>
+      <!-- Front mountains — your logo shape -->
+      <svg class="mt-front" viewBox="0 0 1440 400" preserveAspectRatio="none" height="100%">
+        <path d="M0 400 L150 300 L250 340 L380 220 L460 270 L560 160 L660 240 L720 130 L800 200 L900 290 L1000 200 L1100 260 L1200 180 L1320 250 L1440 300 L1440 400Z" fill="#122034"/>
+        <!-- Mountain peaks highlight -->
+        <path d="M700 130 L720 155 L740 130 L760 150 L720 118Z" fill="#1e3a5a" opacity="0.8"/>
+        <path d="M550 160 L570 185 L590 160 L610 180 L570 148Z" fill="#1e3a5a" opacity="0.6"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- HALO UI -->
+  <div class="halo-ui">
+    <div class="halo-menu">
+      <a href="#" onclick="joinWaitlist(event)" class="halo-menu-item selected">
+        <span class="hmi-icon">⚔</span> Join Waitlist
+      </a>
+      <a href="#" onclick="contactMe(event)" class="halo-menu-item">
+        <span class="hmi-icon">📡</span> Contact Me
+      </a>
+      <a href="https://x.com/theianwill" class="halo-menu-item" target="_blank" onclick="event.stopPropagation()">
+        <span class="hmi-icon">𝕏</span> Follow Me
+      </a>
+      <a href="https://embeds.beehiiv.com/8998fa0b-d555-4700-84a1-ee10826b18b7" class="halo-menu-item" target="_blank" onclick="event.stopPropagation()">
+        <span class="hmi-icon">📬</span> Subscribe to Me
+      </a>
+      <a href="#" class="halo-menu-item" style="opacity:0.5">
+        <span class="hmi-icon">🎮</span> Play With Me <span style="font-size:0.55rem;margin-left:0.5rem;opacity:0.6">— COMING SOON</span>
+      </a>
+    </div>
+
+    <div class="halo-right">
+      <div class="halo-game-title">STRATEGY<br>SESSION</div>
+      <div class="halo-game-sub">Ian Williams Coaching · 2025 · Online</div>
+      <div class="halo-desc">
+        A high-signal 1:1 engagement for ambitious fathers ready to stop waiting. Limited spots. Apply for the waitlist to be first in queue when sessions open.
+      </div>
+    </div>
+  </div>
+
+  <button class="halo-back" onclick="closeHaloScreen()">
+    <span style="font-size:0.9rem">&#9664;</span>
+    <span class="xbtn xbtn-b" style="margin:0 0.2rem">B</span>
+    Back to Dashboard
+  </button>
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<!-- ============================================================
+     CONTACT / GAMER PROFILE SCREEN
+     Xbox 360 "Message a Player" UI
+     ============================================================ -->
+<div id="contact-screen">
+
+  <!-- Header -->
+  <div class="contact-header">
+    <div class="contact-header-icon"></div>
+    <div class="contact-header-title">Message Player</div>
+    <div class="contact-header-sub">iWill434 · Online Now</div>
+    <button onclick="closeContactScreen()" style="margin-left:auto;display:flex;align-items:center;gap:0.4rem;background:transparent;border:1px solid rgba(255,255,255,0.15);padding:0.3rem 0.9rem;font-family:'Rajdhani',sans-serif;font-weight:600;font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.45);cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='rgba(204,32,32,0.6)';this.style.color='#ff6060';" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='rgba(255,255,255,0.45)';">
+      <span style="width:17px;height:17px;border-radius:50%;background:#cc2020;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:0.55rem;font-weight:900;flex-shrink:0;">B</span>
+      Back
+    </button>
+  </div>
+
+  <!-- Main body -->
+  <div class="contact-body">
+
+    <!-- LEFT: Gamer Profile -->
+    <div class="contact-profile">
+
+      <!-- Profile card -->
+      <div class="profile-card">
+        <div class="profile-card-top">
+          <div class="profile-avatar">
+            <div class="profile-avatar-inner">
+              <svg viewBox="0 0 60 60" width="60" height="60" fill="none">
+                <rect width="60" height="60" fill="#3a2010"/>
+                <path d="M8 52 L18 28 L24 36 L30 22 L36 30 L44 14 L52 52Z" fill="#e07818" opacity="0.8"/>
+                <path d="M10 54 L20 30 L26 38 L32 24 L38 32 L46 16 L54 54Z" fill="#e07818"/>
+              </svg>
+            </div>
+          </div>
+          <div class="profile-name-block">
+            <div class="profile-gamertag">iWill434</div>
+            <div class="profile-status">
+              <div class="status-dot"></div>
+              Online — Playing: Life Strategy
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-stars">
+          <span class="star" style="font-size:0.85rem;filter:drop-shadow(0 0 3px rgba(255,200,0,0.6))">★</span>
+          <span class="star" style="font-size:0.85rem;filter:drop-shadow(0 0 3px rgba(255,200,0,0.6))">★</span>
+          <span class="star" style="font-size:0.85rem;filter:drop-shadow(0 0 3px rgba(255,200,0,0.6))">★</span>
+          <span class="star" style="font-size:0.85rem;filter:drop-shadow(0 0 3px rgba(255,200,0,0.6))">★</span>
+          <span class="star" style="font-size:0.85rem;filter:drop-shadow(0 0 3px rgba(255,200,0,0.6))">★</span>
+        </div>
+
+        <div class="profile-stats-row">
+          <div class="pstat">
+            <div class="pstat-num">
+              <span style="font-size:0.7rem;border:1.5px solid rgba(255,255,255,0.4);border-radius:50%;width:14px;height:14px;display:flex;align-items:center;justify-content:center;font-size:0.45rem;">G</span>
+              37,195
+            </div>
+            <div class="pstat-label">Gamerscore</div>
+          </div>
+          <div class="pstat" style="border-left:1px solid rgba(255,255,255,0.08)">
+            <div class="pstat-num">40+</div>
+            <div class="pstat-label">Issues</div>
+          </div>
+          <div class="pstat" style="border-left:1px solid rgba(255,255,255,0.08)">
+            <div class="pstat-num">5★</div>
+            <div class="pstat-label">Rep</div>
+          </div>
+        </div>
+
+        <div class="zone-badge">
+          <span>⬡</span> Zone: Underground
+        </div>
+      </div>
+
+      <!-- Recently Played — newsletter issues as games -->
+      <div>
+        <div class="recently-played-label">Recently Played</div>
+
+        <div class="recent-item">
+          <div class="recent-icon">📖</div>
+          <div class="recent-info">
+            <div class="recent-title">The Slow Build</div>
+            <div class="recent-sub">Sunday Strategy · Issue #15</div>
+          </div>
+          <div class="recent-gs"><span style="border:1px solid rgba(82,176,67,0.5);border-radius:50%;width:12px;height:12px;display:flex;align-items:center;justify-content:center;font-size:0.4rem;">G</span>50</div>
+        </div>
+
+        <div class="recent-item">
+          <div class="recent-icon">🎯</div>
+          <div class="recent-info">
+            <div class="recent-title">Life as a Single-Player RPG</div>
+            <div class="recent-sub">Sunday Strategy · Issue #11</div>
+          </div>
+          <div class="recent-gs"><span style="border:1px solid rgba(82,176,67,0.5);border-radius:50%;width:12px;height:12px;display:flex;align-items:center;justify-content:center;font-size:0.4rem;">G</span>25</div>
+        </div>
+
+        <div class="recent-item">
+          <div class="recent-icon">⚡</div>
+          <div class="recent-info">
+            <div class="recent-title">The 20-Minute Window</div>
+            <div class="recent-sub">Sunday Strategy · Issue #01</div>
+          </div>
+          <div class="recent-gs"><span style="border:1px solid rgba(82,176,67,0.5);border-radius:50%;width:12px;height:12px;display:flex;align-items:center;justify-content:center;font-size:0.4rem;">G</span>10</div>
+        </div>
+      </div>
+
+      <!-- Friend Request = Follow on X -->
+      <a href="https://x.com/theianwill" target="_blank" class="friend-req-btn" onclick="event.stopPropagation()">
+        <span>➕</span> Send Friend Request
+        <span style="font-family:'Share Tech Mono',monospace;font-size:0.55rem;margin-left:auto;color:var(--text-muted)">→ X / Twitter</span>
+      </a>
+
+    </div><!-- end contact-profile -->
+
+    <!-- RIGHT: Message Composer -->
+    <div class="contact-composer">
+
+      <!-- Reason quick-select -->
+      <div>
+        <div class="reason-label">Select Session Type</div>
+        <div class="reason-grid">
+          <button class="reason-btn primary-reason selected" onclick="selectReason(this,'Coaching Waitlist — Join Session')">
+            <span class="reason-icon">🎮</span> Join Session<br>
+            <span style="font-size:0.6rem;opacity:0.7;font-weight:400">Coaching Waitlist</span>
+          </button>
+          <button class="reason-btn" onclick="selectReason(this,'Collaboration Inquiry')">
+            <span class="reason-icon">🤝</span> Collab Invite<br>
+            <span style="font-size:0.6rem;opacity:0.7;font-weight:400">Work Together</span>
+          </button>
+          <button class="reason-btn" onclick="selectReason(this,'General Inquiry')">
+            <span class="reason-icon">💬</span> Quick Message<br>
+            <span style="font-size:0.6rem;opacity:0.7;font-weight:400">General Inquiry</span>
+          </button>
+          <button class="reason-btn" onclick="selectReason(this,'Just Saying Hey')">
+            <span class="reason-icon">👋</span> Say Hello<br>
+            <span style="font-size:0.6rem;opacity:0.7;font-weight:400">Just Saying Hey</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Message form -->
+      <div id="msg-form">
+        <div class="msg-section-label">Compose Message</div>
+
+        <!-- To: field — pre-filled, read-only -->
+        <div class="msg-to-row">
+          <span class="msg-to-label">To:</span>
+          <span class="msg-to-value">iWill434</span>
+          <span style="font-family:'Share Tech Mono',monospace;font-size:0.58rem;color:var(--green-light);margin-left:auto">● Online</span>
+        </div>
+
+        <!-- Subject auto-fills from reason -->
+        <div class="msg-subject-row">
+          <span class="msg-to-label" style="width:60px">Re:</span>
+          <input class="msg-subject-input" id="msg-subject" type="text"
+            value="Coaching Waitlist — Join Session"
+            placeholder="Subject...">
+        </div>
+
+        <!-- Message body -->
+        <div class="msg-body-wrap">
+          <textarea class="msg-body-input" id="msg-body" maxlength="500"
+            placeholder="Type your message here..."
+            oninput="updateCharCount()"></textarea>
+          <div class="msg-char-count" id="char-count">0 / 500</div>
+        </div>
+
+        <!-- Name + Email -->
+        <div class="msg-field-row">
+          <input class="msg-field" type="text" id="msg-name" placeholder="Your name (Gamertag)">
+          <input class="msg-field" type="email" id="msg-email" placeholder="your@email.com">
+        </div>
+
+        <!-- Send -->
+        <button class="send-btn" onclick="sendMessage()">
+          <span class="xbtn xbtn-a" style="width:20px;height:20px;font-size:0.65rem;">A</span>
+          Send Message
+        </button>
+      </div>
+
+      <!-- Confirmation screen -->
+      <div class="send-confirm" id="send-confirm">
+        <div class="confirm-icon">✉️</div>
+        <div class="confirm-title">Message Sent</div>
+        <div class="confirm-sub">
+          iWill434 will receive your message.<br>
+          Expect a response within 24–48 hours.<br><br>
+          <span style="color:var(--green-light)">Achievement Unlocked: First Contact +10G</span>
+        </div>
+        <button class="send-btn" style="max-width:220px;margin-top:0.5rem" onclick="closeContactScreen()">
+          <span class="xbtn xbtn-b" style="width:20px;height:20px;font-size:0.65rem;background:#cc2020;color:#fff;">B</span>
+          Back to Dashboard
+        </button>
+      </div>
+
+    </div><!-- end contact-composer -->
+  </div><!-- end contact-body -->
+
+  <!-- Footer bar -->
+  <div class="contact-footer">
+    <div class="btn-hints">
+      <div class="btn-hint"><div class="xbtn xbtn-a">A</div> Send</div>
+      <div class="btn-hint" onclick="closeContactScreen();selectBlade(2);" style="cursor:pointer;"><div class="xbtn xbtn-b">B</div> Back</div>
+      <div class="btn-hint"><div class="xbtn xbtn-x">X</div> Clear</div>
+    </div>
+    <div class="bottom-right">Message iWill434</div>
+  </div>
+
+</div><!-- end contact-screen -->
+
+<script>
+// ============ BLADE NAVIGATION ============
+// Order: [About=0, Newsletter=1, Home=2, Writing=3, Coaching=4]
+let current = 2;
+
+function selectBlade(index) {
+  if (index === current) return;
+  current = index;
+
+  document.querySelectorAll('.blade').forEach((blade, i) => {
+    blade.classList.remove('active', 'collapsed');
+    blade.classList.add(i === index ? 'active' : 'collapsed');
+  });
+}
+
+function shiftLeft() {
+  selectBlade(Math.max(current - 1, 0));
+}
+
+function shiftRight() {
+  selectBlade(Math.min(current + 1, 4));
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft')  shiftLeft();
+  if (e.key === 'ArrowRight') shiftRight();
+  if (e.key === 'Escape') {
+    closeContactScreen();
+    closeHaloScreen();
+  }
+});
+
+// Touch/swipe
+let txStart = 0;
+document.addEventListener('touchstart', e => { txStart = e.touches[0].clientX; }, {passive:true});
+document.addEventListener('touchend', e => {
+  const diff = txStart - e.changedTouches[0].clientX;
+  if (Math.abs(diff) > 50) diff > 0 ? shiftRight() : shiftLeft();
+});
+
+// ============ HALO SCREEN ============
+function openHaloScreen() {
+  const s = document.getElementById('halo-screen');
+  s.style.display = 'flex';
+  requestAnimationFrame(() => s.classList.add('visible'));
+}
+
+function closeHaloScreen() {
+  const s = document.getElementById('halo-screen');
+  s.classList.remove('visible');
+  setTimeout(() => { s.style.display = 'none'; }, 300);
+}
+
+function joinWaitlist(e) {
+  e.preventDefault();
+  document.querySelectorAll('.halo-menu-item').forEach(el => el.classList.remove('selected'));
+  e.currentTarget.classList.add('selected');
+  setTimeout(() => {
+    closeHaloScreen();
+    openContactScreen();
+    // Pre-select "Join Session" reason
+    document.querySelector('.reason-btn.primary-reason').click();
+  }, 300);
+}
+
+function contactMe(e) {
+  e.preventDefault();
+  document.querySelectorAll('.halo-menu-item').forEach(el => el.classList.remove('selected'));
+  e.currentTarget.classList.add('selected');
+}
+
+// Hover selected state on halo menu
+document.querySelectorAll('.halo-menu-item').forEach(item => {
+  item.addEventListener('mouseenter', function() {
+    document.querySelectorAll('.halo-menu-item').forEach(el => el.classList.remove('selected'));
+    this.classList.add('selected');
+  });
+});
+
+// ============ CONTACT SCREEN ============
+function openContactScreen() {
+  const s = document.getElementById('contact-screen');
+  s.style.display = 'flex';
+  // Reset form state
+  document.getElementById('msg-form').style.display = 'block';
+  document.getElementById('send-confirm').classList.remove('visible');
+}
+
+function closeContactScreen() {
+  document.getElementById('contact-screen').style.display = 'none';
+}
+
+function selectReason(btn, subject) {
+  document.querySelectorAll('.reason-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  document.getElementById('msg-subject').value = subject;
+}
+
+function updateCharCount() {
+  const body = document.getElementById('msg-body');
+  const count = document.getElementById('char-count');
+  const len = body.value.length;
+  count.textContent = `${len} / 500`;
+  count.classList.toggle('warning', len > 420);
+}
+
+function sendMessage() {
+  const name  = document.getElementById('msg-name').value.trim();
+  const email = document.getElementById('msg-email').value.trim();
+  const body  = document.getElementById('msg-body').value.trim();
+
+  if (!name || !email || !body) {
+    // Shake the send button
+    const btn = document.querySelector('.send-btn');
+    btn.style.animation = 'none';
+    btn.style.transform = 'translateX(-4px)';
+    setTimeout(() => { btn.style.transform = 'translateX(4px)'; }, 80);
+    setTimeout(() => { btn.style.transform = 'translateX(0)'; }, 160);
+    return;
+  }
+
+  // Show confirmation
+  document.getElementById('msg-form').style.display = 'none';
+  document.getElementById('send-confirm').classList.add('visible');
+}
+
+// X button clears form
+document.addEventListener('keydown', e => {
+  if (e.key === 'x' || e.key === 'X') {
+    if (document.getElementById('contact-screen').style.display === 'flex') {
+      document.getElementById('msg-body').value = '';
+      document.getElementById('msg-name').value = '';
+      document.getElementById('msg-email').value = '';
+      updateCharCount();
+    }
+  }
+});
+
+// ============ LIVE CLOCK ============
+function tick() {
+  const now = new Date();
+  let h = now.getHours(), m = now.getMinutes();
+  const ap = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;
+  document.getElementById('clock').textContent =
+    `${h}:${String(m).padStart(2,'0')} ${ap}`;
+}
+tick();
+setInterval(tick, 30000);
+
+// ============ BOOT SEQUENCE ============
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const boot = document.getElementById('boot');
+    boot.classList.add('fade-out');
+    setTimeout(() => { boot.style.display = 'none'; }, 800);
+  }, 3200);
+});
+</script>
+
+</body>
+</html>
