@@ -2119,7 +2119,14 @@ body {
 </style>
 </head>
 <body>
-
+  <form name="contact" data-netlify="true" netlify-honeypot="bot-field" hidden>
+  <input type="hidden" name="form-name" value="contact">
+  <input name="bot-field">
+  <input name="name">
+  <input name="email">
+  <input name="subject">
+  <input name="message">
+  </form>
 <!-- ============================================================
      BOOT SCREEN
      ============================================================ -->
@@ -2902,23 +2909,52 @@ function updateCharCount() {
 }
 
 function sendMessage() {
-  const name  = document.getElementById('msg-name').value.trim();
-  const email = document.getElementById('msg-email').value.trim();
-  const body  = document.getElementById('msg-body').value.trim();
+  const name    = document.getElementById('msg-name').value.trim();
+  const email   = document.getElementById('msg-email').value.trim();
+  const subject = document.getElementById('msg-subject').value.trim();
+  const body    = document.getElementById('msg-body').value.trim();
 
   if (!name || !email || !body) {
-    // Shake the send button
-    const btn = document.querySelector('.send-btn');
-    btn.style.animation = 'none';
+    const btn = document.querySelector('#msg-form .send-btn');
     btn.style.transform = 'translateX(-4px)';
     setTimeout(() => { btn.style.transform = 'translateX(4px)'; }, 80);
     setTimeout(() => { btn.style.transform = 'translateX(0)'; }, 160);
     return;
   }
 
-  // Show confirmation
-  document.getElementById('msg-form').style.display = 'none';
-  document.getElementById('send-confirm').classList.add('visible');
+  const btn = document.querySelector('#msg-form .send-btn');
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+
+  const encode = (data) =>
+    Object.keys(data)
+      .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(data[k]))
+      .join('&');
+
+  fetch('/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: encode({
+      'form-name': 'contact',
+      'name':      name,
+      'email':     email,
+      'subject':   subject,
+      'message':   body,
+    }),
+  })
+  .then(() => {
+    document.getElementById('msg-form').style.display = 'none';
+    document.getElementById('send-confirm').classList.add('visible');
+  })
+  .catch(() => {
+    btn.textContent = 'Send Message';
+    btn.disabled = false;
+    btn.style.background = '#cc2020';
+    setTimeout(() => {
+      btn.style.background = '';
+      btn.innerHTML = '<span class="xbtn xbtn-a" style="width:20px;height:20px;font-size:0.65rem;">A</span> Send Message';
+    }, 2000);
+  });
 }
 
 // X button clears form
